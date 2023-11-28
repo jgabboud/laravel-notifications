@@ -26,7 +26,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Jgabboud\\LaravelNotifications\\NotificationServiceProvider"
+                "Jgabboud\\LaravelNotifications\\LaravelNotificationServiceProvider"
             ]
         }
     },
