@@ -1,0 +1,39 @@
+{
+    "name": "jgabboud/laravel-notifications",
+    "type": "library",
+    "license": "MIT",
+    "keywords":
+        [
+            "laravel",
+            "notifications",
+            "email",
+            "push",
+            "in-app",
+            "package",
+            "model"
+        ],
+    "autoload": {
+        "psr-4": {
+            "Jgabboud\\LaravelNotifications\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Joseph Abboud",
+            "email": "jgabboud99@outlook.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Jgabboud\\LaravelNotifications\\NotificationServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "astrotomic/laravel-translatable": "^11.12",
+        "bensampo/laravel-enum": "^6.6",
+        "kutia-software-company/larafirebase": "^1.3"
+    }
+}

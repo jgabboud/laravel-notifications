@@ -1,0 +1,156 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+
+        /*
+        |--------------------------------------------------------------------------
+        | NOTIFICATION TYPES
+        |--------------------------------------------------------------------------
+        | below are the tables related to notification types and their relations
+        | with channels and other models.   
+        |
+        */
+
+        # channels
+        Schema::create('channels', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('key')->unique();
+            $table->timestamps();
+        });
+
+        # notification types
+        Schema::create('notification_types', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('key')->unique();
+            $table->string('model');
+            $table->timestamps();
+        });       
+
+        # notification type channels
+        Schema::create('notification_type_channels', function (Blueprint $table) {
+            $table->uuid('notification_type_id');
+            $table->uuid('channel_id');
+            $table->timestamps();
+
+            $table->foreign('notification_type_id')->references('id')->on('notification_types');
+            $table->foreign('channel_id')->references('id')->on('channels');
+
+            $table->unique(['notification_type_id', 'channel_id']);
+        });
+
+        # model silent notification types
+        Schema::create('model_silent_notification_types', function (Blueprint $table) {
+            $table->id();
+            $table->morphs('model');
+            $table->uuid('notification_type_id');
+            $table->uuid('channel_id');
+            $table->timestamps();
+
+            $table->foreign('notification_type_id')->references('id')->on('notification_types');
+            $table->foreign('channel_id')->references('id')->on('channels');
+
+            $table->unique(['model_type', 'model_id', 'notification_type_id', 'channel_id']);
+        });
+        
+        # model notification types
+        Schema::create('model_notification_types', function (Blueprint $table) {
+            $table->morphs('model');
+            $table->uuid('notification_type_id');
+
+            $table->foreign('notification_type_id')->references('id')->on('notification_types');
+
+            $table->unique(['notification_type_id', 'model_type', 'model_id']);
+        });
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | MANUAL NOTIFICATIONS
+        |--------------------------------------------------------------------------
+        | the below table is where the notifications being sent manually to users.
+        |
+        */
+
+        # manual notifications
+        Schema::create('manual_notifications', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->morphs('sender');
+            $table->string('type');
+            $table->timestamps();
+        });
+
+        # translated manual notifications
+         Schema::create('manual_notification_translations', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('manual_notification_id');
+            $table->string('locale')->index();
+        
+            $table->string('title');
+            $table->text('description');
+            $table->string('url')->nullable();
+            $table->boolean('is_default')->default(false);
+ 
+            $table->unique(['manual_notification_id','locale']);
+            $table->foreign('manual_notification_id')->references('id')->on('manual_notifications')->onDelete('cascade');
+        });
+
+        # model manual notifications
+        Schema::create('model_manual_notifications', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('manual_notification_id');
+            $table->morphs('model');
+            
+            $table->foreign('manual_notification_id')->references('id')->on('manual_notifications')->onDelete('cascade');
+        });
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | NOTIFICATIONS
+        |--------------------------------------------------------------------------
+        | the below table is where the notifications being sent to users are saved 
+        | they are mainly saved as serialized to be sent back translated or in a 
+        | different context if it has been changed 
+        |
+        */
+
+        # create notifications table
+        Schema::create('notifications', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('type');
+            $table->morphs('notifiable');
+            $table->text('data');
+            $table->timestamp('read_at')->nullable();
+            $table->boolean('serialized')->nullable()->default(false);
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('plans');
+        Schema::dropIfExists('plan_has_items');
+        Schema::dropIfExists('plan_items');
+        Schema::dropIfExists('plan_subscriptions');
+        Schema::dropIfExists('plan_subscription_items');
+    }
+};
