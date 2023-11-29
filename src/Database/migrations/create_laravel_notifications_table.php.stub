@@ -147,10 +147,14 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('plans');
-        Schema::dropIfExists('plan_has_items');
-        Schema::dropIfExists('plan_items');
-        Schema::dropIfExists('plan_subscriptions');
-        Schema::dropIfExists('plan_subscription_items');
+        Schema::dropIfExists('channels');
+        Schema::dropIfExists('notification_types');
+        Schema::dropIfExists('notification_type_channels');
+        Schema::dropIfExists('model_silent_notification_types');
+        Schema::dropIfExists('model_notification_types');
+        Schema::dropIfExists('manual_notifications');
+        Schema::dropIfExists('manual_notification_translations');
+        Schema::dropIfExists('model_manual_notifications');
+        Schema::dropIfExists('notifications');
     }
 };
